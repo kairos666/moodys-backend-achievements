@@ -1,7 +1,7 @@
 {
   "name": "moodys-backend-achievements",
   "description": "a moody's backend micro-service for calculating achievements",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "homepage": "",
   "main": "src",
   "keywords": [
