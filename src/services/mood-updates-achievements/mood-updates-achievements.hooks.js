@@ -1,8 +1,10 @@
 
 
+const apiAuthenticate = require('../../hooks/api-authenticate');
+
 module.exports = {
   before: {
-    all: [],
+    all: [apiAuthenticate()],
     find: [],
     get: [],
     create: [],
