@@ -35,7 +35,7 @@ module.exports = function (options = {}) {
     };
 
     return commonHooks.iffElse(
-      commonHooks.isProvider('rest'),
+      commonHooks.isProvider('external'),
       commonHooks.iffElse(
         ctx => ctx.params.headers[authConfig.apiKey.header],
         externalCallWithApiKey,
