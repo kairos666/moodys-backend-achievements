@@ -5,6 +5,7 @@ class Service {
   }
 
   async find (params) {
+    console.log(params)
     return [];
   }
 }

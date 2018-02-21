@@ -5,7 +5,7 @@ const errorHandler = require('./hooks/error-handler');
 
 module.exports = {
   before: {
-    all: [ logger() ],
+    all: [],
     find: [],
     get: [],
     create: [],
