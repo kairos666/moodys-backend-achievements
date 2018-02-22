@@ -1,6 +1,6 @@
 # moodys-backend-achievements
 
-> a moody&#39;s backend micro-service for calculating achievements
+> a moody's backend micro-service for calculating achievements
 
 ## About
 

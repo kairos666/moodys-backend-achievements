@@ -1,7 +1,7 @@
 {
   "name": "moodys-backend-achievements",
   "description": "a moody's backend micro-service for calculating achievements",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "homepage": "",
   "main": "src",
   "keywords": [
@@ -25,22 +25,27 @@
     "test": "npm run eslint && npm run mocha",
     "eslint": "eslint src/. test/. --config .eslintrc.json",
     "start": "node src/",
+    "dev": "nodemon src/",
     "mocha": "mocha test/ --recursive --exit"
   },
   "dependencies": {
+    "@feathersjs/authentication": "^2.1.2",
     "@feathersjs/configuration": "^1.0.2",
     "@feathersjs/errors": "^3.3.0",
     "@feathersjs/express": "^1.2.0",
     "@feathersjs/feathers": "^3.1.3",
     "compression": "^1.7.1",
     "cors": "^2.8.4",
+    "feathers-hooks-common": "^4.8.0",
     "helmet": "^3.11.0",
+    "passport-custom": "^1.0.5",
     "serve-favicon": "^2.4.5",
     "winston": "^2.4.0"
   },
   "devDependencies": {
     "eslint": "^4.18.0",
     "mocha": "^5.0.1",
+    "nodemon": "^1.15.1",
     "request": "^2.83.0",
     "request-promise": "^4.2.2"
   }
