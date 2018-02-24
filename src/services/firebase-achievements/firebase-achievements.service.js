@@ -9,7 +9,8 @@ module.exports = function (app) {
 
   const options = {
     name: 'firebase-achievements',
-    paginate
+    paginate,
+    firebaseDBInstance
   };
 
   // Initialize our service with any options it requires
