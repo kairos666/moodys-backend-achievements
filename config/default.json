@@ -13,5 +13,17 @@
       "header": "x-api-key",
       "allowedKeys": [ "opensesame" ]
     }
+  },
+  "firebase": {
+    "firebaseAppConfig": {
+      "apiKey": "<api key>",
+      "authDomain": "<app domain>",
+      "databaseURL": "<app DB URL>",
+      "storageBucket": "<app storage bucket>"
+    },
+    "firebaseAchievementsServiceAuth": {
+      "email": "<dedicated user email>",
+      "password": "<dedicated user password>"
+    }
   }
 }
