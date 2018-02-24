@@ -1,37 +1,74 @@
 /* eslint-disable no-unused-vars */
+const async = require('async');
+
 class Service {
   constructor (options) {
     this.options = options || {};
   }
 
-  async find (params) {
-    return [];
+  /**
+   * Return mood entries from firebase DB
+   * from all users
+   */
+  async find () {
+    // apply filterByUid if present
+    let dbRef = this.options.firebaseDBInstance.ref('moods');
+
+    return new Promise((resolve, reject) => {
+      dbRef.once('value', snapshot => {
+        let rawObjectResult = snapshot.val();
+
+        // process object to array asynchroneously
+        async.map(
+          rawObjectResult, 
+          async (item) => item,
+          (error, processedArray) => { 
+            if (error) {
+              // couldn't process all the data
+              reject(error);
+            } else {
+              // success converting object to array
+              resolve(processedArray);
+            }
+          }
+        );
+      }, error => {
+        // couldn't retrieve data from firebase
+        reject(error);
+      });
+    });
   }
 
-  async get (id, params) {
-    return {
-      id, text: `A new message with ID: ${id}!`
-    };
-  }
+  /**
+   * Return mood entries from firebase DB
+   * from specific user
+   */
+  async get (uid) {
+    let dbRef = this.options.firebaseDBInstance.ref('moods').orderByChild('uid').equalTo(uid);
+    
+    return new Promise((resolve, reject) => {
+      dbRef.once('value', snapshot => {
+        let rawObjectResult = snapshot.val();
 
-  async create (data, params) {
-    if (Array.isArray(data)) {
-      return await Promise.all(data.map(current => this.create(current)));
-    }
-
-    return data;
-  }
-
-  async update (id, data, params) {
-    return data;
-  }
-
-  async patch (id, data, params) {
-    return data;
-  }
-
-  async remove (id, params) {
-    return { id };
+        // process object to array asynchroneously
+        async.map(
+          rawObjectResult, 
+          async (item) => item,
+          (error, processedArray) => { 
+            if (error) {
+              // couldn't process all the data
+              reject(error);
+            } else {
+              // success converting object to array
+              resolve(processedArray);
+            }
+          }
+        );
+      }, error => {
+        // couldn't retrieve data from firebase
+        reject(error);
+      });
+    });
   }
 }
 
