@@ -20,6 +20,8 @@ class Service {
     let positiveMoodStreak = await promiseHelpers.achievementsCalculators.sequencePositiveMoods(userMoodEntries);
     let negativeMoodStreak = await promiseHelpers.achievementsCalculators.sequenceNegativeMoods(userMoodEntries);
     let neutralMoodStreak = await promiseHelpers.achievementsCalculators.sequenceNeutralMoods(userMoodEntries);
+    let highestMoodScoreReached = await promiseHelpers.achievementsCalculators.someSpecificScore(userMoodEntries, 5);
+    let lowestMoodScoreReached = await promiseHelpers.achievementsCalculators.someSpecificScore(userMoodEntries, -5);
 
     return {
       moods: userMoodEntries,
@@ -29,7 +31,9 @@ class Service {
         consecutiveMoodEntries,
         positiveMoodStreak,
         negativeMoodStreak,
-        neutralMoodStreak
+        neutralMoodStreak,
+        highestMoodScoreReached,
+        lowestMoodScoreReached
       }
     }
   }

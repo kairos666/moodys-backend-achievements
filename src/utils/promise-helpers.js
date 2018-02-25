@@ -345,6 +345,28 @@ let sequenceNeutralMoods = function(moodsArray) {
         });
 }
 
+let someSpecificScore = function(moodsArray, score) {
+    return removeSameDayOverwrittenEntries(moodsArray)
+        .then(moodArray2 => {
+            return new Promise((resolve, reject) => {
+            // output only the latest value from all entries for a single day
+            async.some(
+                moodsArray, 
+                async (item) => (item.value === `${score}`),
+                (error, processedArray) => { 
+                    if (error) {
+                        // couldn't process all the data
+                        reject(error);
+                    } else {
+                        // success evaluating existence of score
+                        resolve(processedArray);
+                    }
+                }
+            );
+        });
+    });
+}
+
 module.exports = {
     async: {
         pObjectToArray: pObjectToArray
@@ -354,6 +376,7 @@ module.exports = {
         consecutiveMoods: consecutiveMoods,
         sequencePositiveMoods: sequencePositiveMoods,
         sequenceNegativeMoods: sequenceNegativeMoods,
-        sequenceNeutralMoods: sequenceNeutralMoods
+        sequenceNeutralMoods: sequenceNeutralMoods,
+        someSpecificScore
     }
 };
