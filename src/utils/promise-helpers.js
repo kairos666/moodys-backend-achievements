@@ -102,6 +102,10 @@ let moodEntriesGroupBy = function(moodsArray, groupByCriteria) {
     });
 };
 
+/**
+ * keep only relevant entry for each day
+ * @param {*} moodsArray 
+ */
 let removeSameDayOverwrittenEntries = function(moodsArray) {
     return fillMissingDayTimeStamps(moodsArray)
         .then(moodsArray2 => moodEntriesGroupBy(moodsArray2, 'dayTimestamp'))
@@ -125,6 +129,10 @@ let removeSameDayOverwrittenEntries = function(moodsArray) {
         });
 };
 
+/**
+ * calculate how many consecutive entries were scored
+ * @param {*} moodsArray 
+ */
 let consecutiveMoods = function (moodsArray) {
     return removeWeekEndEntries(moodsArray)
         .then(moodsArray2 => removeSameDayOverwrittenEntries(moodsArray2))
