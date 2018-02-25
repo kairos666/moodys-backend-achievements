@@ -22,6 +22,16 @@ class Service {
       return promiseHelpers.async.pObjectToArray(rawObject);
     });
   }
+ 
+  async update (uid, data) {
+    let dbRef = this.options.firebaseDBInstance.ref(`achievements/${uid}`);
+    
+    return firebaseAdapter.pSetFirebaseDBRecord(dbRef, data).then(() => {
+      return `user: ${uid} - achievements updated`;
+    }).catch(error => {
+      return error;
+    });
+  }
 }
 
 module.exports = function (options) {

@@ -39,6 +39,7 @@ let getInstance = function(app) {
  */
 let pfirebaseDBSnapshot = function(dbRef) {
     if (!dbRef) reject(new Error('missing firebase ref in - pfirebaseDBSnapshot function call'));
+
     return new Promise((resolve, reject) => {
         dbRef.once('value', snapshot => {
             resolve(snapshot.val());
@@ -49,7 +50,19 @@ let pfirebaseDBSnapshot = function(dbRef) {
     });
 }
 
+/**
+ * set firebase DB node entry (overwriting completely previous data on this node)
+ * @param {*} dbRef 
+ * @param {Object} record 
+ */
+let pSetFirebaseDBRecord = function(dbRef, record) {
+    if (!dbRef) reject(new Error('missing firebase ref in - pSetFirebaseDBRecord function call'));
+    
+    return dbRef.set(record);
+}
+
 module.exports = {
     getFirebaseDBInstance: getInstance,
-    pfirebaseDBSnapshot: pfirebaseDBSnapshot
+    pfirebaseDBSnapshot: pfirebaseDBSnapshot,
+    pSetFirebaseDBRecord: pSetFirebaseDBRecord
 };
