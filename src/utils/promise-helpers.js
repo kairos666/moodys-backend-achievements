@@ -133,7 +133,7 @@ let removeSameDayOverwrittenEntries = function(moodsArray) {
  * calculate how many consecutive entries were scored
  * @param {*} moodsArray 
  */
-let consecutiveMoods = function (moodsArray) {
+let consecutiveMoods = function(moodsArray) {
     return removeWeekEndEntries(moodsArray)
         .then(moodsArray2 => removeSameDayOverwrittenEntries(moodsArray2))
         .then(moodsArray3 => {
@@ -166,7 +166,7 @@ let consecutiveMoods = function (moodsArray) {
                             // couldn't process all the data
                             reject(error);
                         } else {
-                            // success reducing entries
+                            // success counting entries
                             resolve(acc.maxConsecutiveCount);
                         }
                     }
@@ -175,11 +175,153 @@ let consecutiveMoods = function (moodsArray) {
         });
 };
 
+/**
+ * calculate if user have some mood entries
+ * @param {*} moodsArray 
+ */
+let hasEntries = function(moodsArray) { return (moodsArray.length !== 0) };
+
+/**
+ * count max positive moods streak
+ * @param {*} moodsArray 
+ */
+let sequencePositiveMoods = function(moodsArray) {
+    return removeWeekEndEntries(moodsArray)
+        .then(moodsArray2 => removeSameDayOverwrittenEntries(moodsArray2))
+        .then(moodsArray3 => {
+            return new Promise((resolve, reject) => {
+                // output only the max count of positive streak
+                async.transform(
+                    moodsArray3,
+                    { maxPositiveMoodStreak: 0, currentPositiveMoodStreak: 0 },
+                    async (acc, item, key) => {
+                        // skip first item
+                        if (key === 0) return;
+
+                        // calculate if two following entries are positive
+                        let isPositiveStreak = (parseInt(item.value) > 0 && parseInt(moodsArray3[key - 1].value) > 0);
+
+                        if (isPositiveStreak) {
+                            // increment relative counter
+                            acc.currentPositiveMoodStreak++
+                            // update max counter if necessary
+                            if (acc.maxPositiveMoodStreak < acc.currentPositiveMoodStreak) acc.maxPositiveMoodStreak = acc.currentPositiveMoodStreak;
+                        } else {
+                            // reset counter
+                            acc.currentPositiveMoodStreak = 0;
+                        }
+                    },
+                    (error, acc) => { 
+                        if (error) {
+                            // couldn't process all the data
+                            reject(error);
+                        } else {
+                            // success reducing entries
+                            resolve(acc.maxPositiveMoodStreak);
+                        }
+                    }
+                );
+            });
+        });
+}
+
+/**
+ * count max negative moods streak
+ * @param {*} moodsArray 
+ */
+let sequenceNegativeMoods = function(moodsArray) {
+    return removeWeekEndEntries(moodsArray)
+        .then(moodsArray2 => removeSameDayOverwrittenEntries(moodsArray2))
+        .then(moodsArray3 => {
+            return new Promise((resolve, reject) => {
+                // output only the max count of negative streak
+                async.transform(
+                    moodsArray3,
+                    { maxNegativeMoodStreak: 0, currentNegativeMoodStreak: 0 },
+                    async (acc, item, key) => {
+                        // skip first item
+                        if (key === 0) return;
+
+                        // calculate if two following entries are negative
+                        let isNegativeStreak = (parseInt(item.value) < 0 && parseInt(moodsArray3[key - 1].value) < 0);
+
+                        if (isNegativeStreak) {
+                            // increment relative counter
+                            acc.currentNegativeMoodStreak++
+                            // update max counter if necessary
+                            if (acc.maxNegativeMoodStreak < acc.currentNegativeMoodStreak) acc.maxNegativeMoodStreak = acc.currentNegativeMoodStreak;
+                        } else {
+                            // reset counter
+                            acc.currentNegativeMoodStreak = 0;
+                        }
+                    },
+                    (error, acc) => { 
+                        if (error) {
+                            // couldn't process all the data
+                            reject(error);
+                        } else {
+                            // success reducing entries
+                            resolve(acc.maxNegativeMoodStreak);
+                        }
+                    }
+                );
+            });
+        });
+}
+
+/**
+ * count max neutral moods streak
+ * @param {*} moodsArray 
+ */
+let sequenceNeutralMoods = function(moodsArray) {
+    return removeWeekEndEntries(moodsArray)
+        .then(moodsArray2 => removeSameDayOverwrittenEntries(moodsArray2))
+        .then(moodsArray3 => {
+            return new Promise((resolve, reject) => {
+                // output only the max count of neutral streak
+                async.transform(
+                    moodsArray3,
+                    { maxNeutralMoodStreak: 0, currentNeutralMoodStreak: 0 },
+                    async (acc, item, key) => {
+                        // skip first item
+                        if (key === 0) return;
+
+                        // calculate if two following entries are negative
+                        let isNeutralStreak = (parseInt(item.value) === 0 && parseInt(moodsArray3[key - 1].value) === 0);
+
+                        if (isNeutralStreak) {
+                            // increment relative counter
+                            acc.currentNeutralMoodStreak++
+                            // update max counter if necessary
+                            if (acc.maxNeutralMoodStreak < acc.currentNeutralMoodStreak) acc.maxNeutralMoodStreak = acc.currentNeutralMoodStreak;
+                        } else {
+                            // reset counter
+                            acc.currentNeutralMoodStreak = 0;
+                        }
+                    },
+                    (error, acc) => { 
+                        if (error) {
+                            // couldn't process all the data
+                            reject(error);
+                        } else {
+                            // success reducing entries
+                            resolve(acc.maxNeutralMoodStreak);
+                        }
+                    }
+                );
+            });
+        });
+}
+
 module.exports = {
     async: {
         pObjectToArray: pObjectToArray
     },
     achievementsCalculators: {
-        consecutiveMoods: consecutiveMoods
+        hasEntries: hasEntries,
+        consecutiveMoods: consecutiveMoods,
+        sequencePositiveMoods: sequencePositiveMoods,
+        sequenceNegativeMoods: sequenceNegativeMoods,
+        sequenceNeutralMoods: sequenceNeutralMoods
     }
 };

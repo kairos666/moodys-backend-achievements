@@ -11,12 +11,26 @@ class Service {
   async get (uid) {
     // retrieve relevant data for targeted user
     let allData = await Promise.all([this.app.service('firebase-moods').get(uid), this.app.service('firebase-achievements').get(uid)]);
-    let userMoodEntries = await promiseHelpers.achievementsCalculators.consecutiveMoods(allData[0]);
+    let userMoodEntries = await allData[0];
     let userAchievements = allData[1];
+
+    // calculus
+    let hasMoodEntries = await promiseHelpers.achievementsCalculators.hasEntries(userMoodEntries);
+    let consecutiveMoodEntries = await promiseHelpers.achievementsCalculators.consecutiveMoods(userMoodEntries);
+    let positiveMoodStreak = await promiseHelpers.achievementsCalculators.sequencePositiveMoods(userMoodEntries);
+    let negativeMoodStreak = await promiseHelpers.achievementsCalculators.sequenceNegativeMoods(userMoodEntries);
+    let neutralMoodStreak = await promiseHelpers.achievementsCalculators.sequenceNeutralMoods(userMoodEntries);
 
     return {
       moods: userMoodEntries,
-      achievements: userAchievements
+      achievements: userAchievements,
+      calculated: {
+        hasMoodEntries,
+        consecutiveMoodEntries,
+        positiveMoodStreak,
+        negativeMoodStreak,
+        neutralMoodStreak
+      }
     }
   }
 }
