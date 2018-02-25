@@ -4,7 +4,7 @@ const hooks = require('./firebase-moods.hooks');
 const firebaseAdapter = require('../../adapters/firebase-adapter');
 
 module.exports = function (app) {
-  const firebaseDBInstance = firebaseAdapter(app);
+  const firebaseDBInstance = firebaseAdapter.getFirebaseDBInstance(app);
   const paginate = app.get('paginate');
 
   const options = {

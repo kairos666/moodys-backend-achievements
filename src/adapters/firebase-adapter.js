@@ -21,7 +21,8 @@ let createInstance = function(app) {
     return firebaseAppDB;
 }
 
-module.exports = function (app) {
+// getter for firebaseDBInstance
+let getInstance = function(app) {
     // pass instance or create one
     if (!firebaseDBInstance && app) {
         firebaseDBInstance = createInstance(app);
@@ -30,4 +31,25 @@ module.exports = function (app) {
         logger.error('Couldn\'t create firebaseDBInstance - was missing feathers app reference');
     }
     return firebaseDBInstance;
+};
+
+/**
+ * get firebase DB snapshot from a ref or query
+ * @param {*} dbRef
+ */
+let pfirebaseDBSnapshot = function(dbRef) {
+    if (!dbRef) reject(new Error('missing firebase ref in - pfirebaseDBSnapshot function call'));
+    return new Promise((resolve, reject) => {
+        dbRef.once('value', snapshot => {
+            resolve(snapshot.val());
+        }, error => {
+            // couldn't retrieve data from firebase
+            reject(error);
+        });
+    });
+}
+
+module.exports = {
+    getFirebaseDBInstance: getInstance,
+    pfirebaseDBSnapshot: pfirebaseDBSnapshot
 };
