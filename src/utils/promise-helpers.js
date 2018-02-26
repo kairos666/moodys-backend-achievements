@@ -159,19 +159,19 @@ let removeSameDayOverwrittenEntries = function(moodsArray) {
  */
 let consecutiveMoods = function(moodsArray) {
     return removeWeekEndEntries(moodsArray)
-        .then(moodsArray2 => removeSameDayOverwrittenEntries(moodsArray2))
-        .then(moodsArray3 => {
+        .then(removeSameDayOverwrittenEntries)
+        .then(moodsArray2 => {
             return new Promise((resolve, reject) => {
                 // output only the max count of consecutive entries
                 async.transform(
-                    moodsArray3,
+                    moodsArray2,
                     { maxConsecutiveCount: 0, currentConsecutiveCount: 0 },
                     async (acc, item, key) => {
                         // skip first item
                         if (key === 0) return;
 
                         // consecutive entries are 24h between work days, 72h between friday and monday (+/- 1 hour to account for seasonal hour changes)
-                        let timeDiff = (item.dayTimestamp - moodsArray3[key - 1].dayTimestamp)/1000;
+                        let timeDiff = (item.dayTimestamp - moodsArray2[key - 1].dayTimestamp)/1000;
                         let isTimeDiffConsecutive = (moment(item.timestamp).day() === 1)
                             ? (71*3600 <= timeDiff && timeDiff <= 73*3600)
                             : (23*3600 <= timeDiff && timeDiff <= 25*3600);
@@ -213,20 +213,20 @@ let hasEntries = function(moodsArray) { return (moodsArray.length !== 0) };
  */
 let sequencePositiveMoods = function(moodsArray) {
     return removeWeekEndEntries(moodsArray)
-        .then(moodsArray2 => removeSameDayOverwrittenEntries(moodsArray2))
-        .then(moodsArray3 => removeSpecialEntries(moodsArray3))
-        .then(moodsArray4 => {
+        .then(removeSameDayOverwrittenEntries)
+        .then(removeSpecialEntries)
+        .then(moodsArray2 => {
             return new Promise((resolve, reject) => {
                 // output only the max count of positive streak
                 async.transform(
-                    moodsArray4,
+                    moodsArray2,
                     { maxPositiveMoodStreak: 0, currentPositiveMoodStreak: 0 },
                     async (acc, item, key) => {
                         // skip first item
                         if (key === 0) return;
 
                         // calculate if two following entries are positive
-                        let isPositiveStreak = (parseInt(item.value) > 0 && parseInt(moodsArray4[key - 1].value) > 0);
+                        let isPositiveStreak = (parseInt(item.value) > 0 && parseInt(moodsArray2[key - 1].value) > 0);
 
                         if (isPositiveStreak) {
                             // increment relative counter
@@ -259,20 +259,20 @@ let sequencePositiveMoods = function(moodsArray) {
  */
 let sequenceNegativeMoods = function(moodsArray) {
     return removeWeekEndEntries(moodsArray)
-        .then(moodsArray2 => removeSameDayOverwrittenEntries(moodsArray2))
-        .then(moodsArray3 => removeSpecialEntries(moodsArray3))
-        .then(moodsArray4 => {
+        .then(removeSameDayOverwrittenEntries)
+        .then(removeSpecialEntries)
+        .then(moodsArray2 => {
             return new Promise((resolve, reject) => {
                 // output only the max count of negative streak
                 async.transform(
-                    moodsArray4,
+                    moodsArray2,
                     { maxNegativeMoodStreak: 0, currentNegativeMoodStreak: 0 },
                     async (acc, item, key) => {
                         // skip first item
                         if (key === 0) return;
 
                         // calculate if two following entries are negative
-                        let isNegativeStreak = (parseInt(item.value) < 0 && parseInt(moodsArray4[key - 1].value) < 0);
+                        let isNegativeStreak = (parseInt(item.value) < 0 && parseInt(moodsArray2[key - 1].value) < 0);
 
                         if (isNegativeStreak) {
                             // increment relative counter
@@ -305,20 +305,20 @@ let sequenceNegativeMoods = function(moodsArray) {
  */
 let sequenceNeutralMoods = function(moodsArray) {
     return removeWeekEndEntries(moodsArray)
-        .then(moodsArray2 => removeSameDayOverwrittenEntries(moodsArray2))
-        .then(moodsArray3 => removeSpecialEntries(moodsArray3))
-        .then(moodsArray4 => {
+        .then(removeSameDayOverwrittenEntries)
+        .then(removeSpecialEntries)
+        .then(moodsArray2 => {
             return new Promise((resolve, reject) => {
                 // output only the max count of neutral streak
                 async.transform(
-                    moodsArray4,
+                    moodsArray2,
                     { maxNeutralMoodStreak: 0, currentNeutralMoodStreak: 0 },
                     async (acc, item, key) => {
                         // skip first item
                         if (key === 0) return;
 
                         // calculate if two following entries are negative
-                        let isNeutralStreak = (parseInt(item.value) === 0 && parseInt(moodsArray4[key - 1].value) === 0);
+                        let isNeutralStreak = (parseInt(item.value) === 0 && parseInt(moodsArray2[key - 1].value) === 0);
 
                         if (isNeutralStreak) {
                             // increment relative counter
@@ -449,13 +449,13 @@ let sameDayMoodChange = function(moodsArray) {
  */
 let sameDayMoodPolarityChange = function(moodsArray) {
     return fillMissingDayTimeStamps(moodsArray)
-        .then(moodsArray2 => removeSpecialEntries(moodsArray2))
-        .then(moodsArray3 => moodEntriesGroupBy(moodsArray3, 'dayTimestamp'))
-        .then(moodsArray4 => {
+        .then(removeSpecialEntries)
+        .then(moodsArray2 => moodEntriesGroupBy(moodsArray2, 'dayTimestamp'))
+        .then(moodsArray3 => {
             return new Promise((resolve, reject) => {
                 // output only the latest value from all entries for a single day
                 async.transform(
-                    moodsArray4,
+                    moodsArray3,
                     { maxSameDayPolarityChanges: 0 },
                     async (acc, item, key) => {
                         // for each days evaluate if we have both negative and positive mood entries
