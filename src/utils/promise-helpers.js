@@ -106,7 +106,7 @@ let fillMissingDayTimeStamps = function(moodsArray) {
  * @param {*} groupByCriteria 
  */
 let moodEntriesGroupBy = function(moodsArray, groupByCriteria) {
-    // groupBy some criteria (ex: dayTimestamp for rray of same day entries)
+    // groupBy some criteria (ex: dayTimestamp for array of same day entries)
     return new Promise((resolve, reject) => {
         async.groupBy(
             moodsArray, 
@@ -345,11 +345,15 @@ let sequenceNeutralMoods = function(moodsArray) {
         });
 }
 
+/**
+ * return a boolean depending on mood entries containing at least one value corresponding to score
+ * @param {*} moodsArray 
+ * @param {*} score 
+ */
 let someSpecificScore = function(moodsArray, score) {
     return removeSameDayOverwrittenEntries(moodsArray)
         .then(moodArray2 => {
             return new Promise((resolve, reject) => {
-            // output only the latest value from all entries for a single day
             async.some(
                 moodsArray, 
                 async (item) => (item.value === `${score}`),
@@ -367,16 +371,123 @@ let someSpecificScore = function(moodsArray, score) {
     });
 }
 
+/**
+ * given a mood array - returns a boolean depending of having or not entries for both positive and negative scores
+ * @param {*} moodsArray 
+ */
+let hasBothPositiveAndNegativeEntries = function(moodsArray) {
+    let hasPositiveEntries = new Promise((resolve, reject) => {
+        async.some(
+            moodsArray, 
+            async (item) => (parseInt(item.value) > 0),
+            (error, processedArray) => { 
+                if (error) {
+                    // couldn't process all the data
+                    reject(error);
+                } else {
+                    // success evaluating existence of score
+                    resolve(processedArray);
+                }
+            }
+        );
+    });
+    let hasNegativeEntries = new Promise((resolve, reject) => {
+        async.some(
+            moodsArray, 
+            async (item) => (parseInt(item.value) < 0),
+            (error, processedArray) => { 
+                if (error) {
+                    // couldn't process all the data
+                    reject(error);
+                } else {
+                    // success evaluating existence of score
+                    resolve(processedArray);
+                }
+            }
+        );
+    });
+
+    return Promise.all([hasPositiveEntries, hasNegativeEntries])
+        .then(results => (results[0] && results[1]));
+}
+
+/**
+ * return max number of mood entries for a single day
+ * @param {*} moodsArray 
+ */
+let sameDayMoodChange = function(moodsArray) {
+    return fillMissingDayTimeStamps(moodsArray)
+        .then(moodsArray3 => moodEntriesGroupBy(moodsArray3, 'dayTimestamp'))
+        .then(moodsArray4 => {
+            return new Promise((resolve, reject) => {
+                async.transform(
+                    moodsArray4,
+                    { maxSameDayMoodChanges: 0 },
+                    async (acc, item) => {
+                        // count if there are multiple entries for the same day
+                        let currentMoodChangesCount = item.length;
+                        if (currentMoodChangesCount > acc.maxSameDayMoodChanges) acc.maxSameDayMoodChanges = currentMoodChangesCount;
+                    },
+                    (error, acc) => { 
+                        if (error) {
+                            // couldn't process all the data
+                            reject(error);
+                        } else {
+                            // success reducing entries (offset if only 1 then it is not a same day multiple entry)
+                            if (acc.maxSameDayMoodChanges === 1) acc.maxSameDayMoodChanges = 0;
+                            resolve(acc.maxSameDayMoodChanges);
+                        }
+                    }
+                );
+            });
+        });
+};
+
+/**
+ * find mood swings in same day entries
+ * @param {*} moodsArray 
+ */
+let sameDayMoodPolarityChange = function(moodsArray) {
+    return fillMissingDayTimeStamps(moodsArray)
+        .then(moodsArray2 => removeSpecialEntries(moodsArray2))
+        .then(moodsArray3 => moodEntriesGroupBy(moodsArray3, 'dayTimestamp'))
+        .then(moodsArray4 => {
+            return new Promise((resolve, reject) => {
+                // output only the latest value from all entries for a single day
+                async.transform(
+                    moodsArray4,
+                    { maxSameDayPolarityChanges: 0 },
+                    async (acc, item, key) => {
+                        // for each days evaluate if we have both negative and positive mood entries
+                        let currentDayResult = await hasBothPositiveAndNegativeEntries(item);
+                        if (currentDayResult) acc.maxSameDayPolarityChanges++;
+                    },
+                    (error, acc) => { 
+                        if (error) {
+                            // couldn't process all the data
+                            reject(error);
+                        } else {
+                            // success reducing entries
+                            resolve(acc.maxSameDayPolarityChanges);
+                        }
+                    }
+                );
+            });
+        });
+};
+
 module.exports = {
     async: {
         pObjectToArray: pObjectToArray
     },
     achievementsCalculators: {
-        hasEntries: hasEntries,
-        consecutiveMoods: consecutiveMoods,
-        sequencePositiveMoods: sequencePositiveMoods,
-        sequenceNegativeMoods: sequenceNegativeMoods,
-        sequenceNeutralMoods: sequenceNeutralMoods,
-        someSpecificScore
+        hasEntries,
+        consecutiveMoods,
+        sequencePositiveMoods,
+        sequenceNegativeMoods,
+        sequenceNeutralMoods,
+        someSpecificScore,
+        sameDayMoodChange,
+        sameDayMoodPolarityChange
     }
 };
