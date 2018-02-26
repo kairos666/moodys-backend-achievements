@@ -25,6 +25,29 @@ let pObjectToArray = function(rawObject) {
 };
 
 /**
+ * filter out all entries older than threshold timestamp
+ * @param {*} moodsArray 
+ * @param {Integer} thresholdTimestamp 
+ */
+let takeOnlyEntriesAfter = function(moodsArray, thresholdTimestamp) {
+    return new Promise((resolve, reject) => {
+        async.filter(
+            moodsArray, 
+            async (item) => (item.timestamp >= thresholdTimestamp),
+            (error, processedArray) => { 
+                if (error) {
+                    // couldn't process all the data
+                    reject(error);
+                } else {
+                    // success removing older entries
+                    resolve(processedArray);
+                }
+            }
+        );
+    });
+}
+
+/**
  * remove mood entries made sunday or saturday
  * @param {*} moodsArray 
  */
@@ -514,6 +537,11 @@ let moodPolarityChange = function(moodsArray, direction) {
         });
 }
 
+/**
+ * evaluate number of following mood entries that satisfies span distance and direction
+ * @param {*} moodsArray 
+ * @param {Float} spanDiff 
+ */
 let moodSpanChange = function(moodsArray, spanDiff) {
     return removeSameDayOverwrittenEntries(moodsArray)
         .then(removeSpecialEntries)
@@ -562,6 +590,7 @@ module.exports = {
         sameDayMoodChange,
         sameDayMoodPolarityChange,
         moodPolarityChange,
-        moodSpanChange
+        moodSpanChange,
+        takeOnlyEntriesAfter
     }
 };
