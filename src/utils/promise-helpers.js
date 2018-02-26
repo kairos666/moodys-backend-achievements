@@ -476,6 +476,78 @@ let sameDayMoodPolarityChange = function(moodsArray) {
         });
 };
 
+/**
+ * evaluate number of mood swing (from negative mood to positive or reverse) depending on direction
+ * @param {*} moodsArray 
+ * @param {Integer} direction 
+ */
+let moodPolarityChange = function(moodsArray, direction) {
+    return removeSameDayOverwrittenEntries(moodsArray)
+        .then(removeSpecialEntries)
+        .then(moodsArray2 => {
+            return new Promise((resolve, reject) => {
+                // output only the latest value from all entries for a single day
+                async.transform(
+                    moodsArray2,
+                    { maxGlobalPolarityChanges: 0 },
+                    async (acc, item, key) => {
+                        // skip first item
+                        if (key === 0) return;
+
+                        // for each following days evaluate if we have both negative and positive mood entries
+                        // from negative to positive
+                        if (direction === 1 && parseInt(item.value) > 0 && parseInt(moodsArray2[key - 1].value) < 0) acc.maxGlobalPolarityChanges++;
+                        // from positive to negative
+                        if (direction === -1 && parseInt(item.value) < 0 && parseInt(moodsArray2[key - 1].value) > 0) acc.maxGlobalPolarityChanges++;
+                    },
+                    (error, acc) => { 
+                        if (error) {
+                            // couldn't process all the data
+                            reject(error);
+                        } else {
+                            // success reducing entries
+                            resolve(acc.maxGlobalPolarityChanges);
+                        }
+                    }
+                );
+            });
+        });
+}
+
+let moodSpanChange = function(moodsArray, spanDiff) {
+    return removeSameDayOverwrittenEntries(moodsArray)
+        .then(removeSpecialEntries)
+        .then(moodsArray2 => {
+            return new Promise((resolve, reject) => {
+                // output only the latest value from all entries for a single day
+                async.transform(
+                    moodsArray2,
+                    { maxSpanDiffChanges: 0 },
+                    async (acc, item, key) => {
+                        // skip first item
+                        if (key === 0) return;
+
+                        // for each following days evaluate gap is sufficient to count + sign is valid
+                        let previousDayScore = parseInt(moodsArray2[key - 1].value);
+                        let currentDayScore = parseInt(item.value);
+                        let absoluteDistance = Math.abs(currentDayScore - previousDayScore);
+                        let isSignMatching = ((previousDayScore < currentDayScore && spanDiff >= 0) || (previousDayScore > currentDayScore && spanDiff <= 0));
+                        if (isSignMatching && absoluteDistance >= Math.abs(spanDiff)) acc.maxSpanDiffChanges++;
+                    },
+                    (error, acc) => { 
+                        if (error) {
+                            // couldn't process all the data
+                            reject(error);
+                        } else {
+                            // success reducing entries
+                            resolve(acc.maxSpanDiffChanges);
+                        }
+                    }
+                );
+            });
+        });
+}
+
 module.exports = {
     async: {
         pObjectToArray: pObjectToArray
@@ -488,6 +560,8 @@ module.exports = {
         sequenceNeutralMoods,
         someSpecificScore,
         sameDayMoodChange,
-        sameDayMoodPolarityChange
+        sameDayMoodPolarityChange,
+        moodPolarityChange,
+        moodSpanChange
     }
 };
