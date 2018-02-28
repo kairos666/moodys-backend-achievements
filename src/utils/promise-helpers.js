@@ -103,8 +103,6 @@ let fillMissingDayTimeStamps = function(moodsArray) {
         async.map(
             moodsArray, 
             async (item) => {
-                item.date = moment(item.timestamp).format('DD-MM-YYYY');
-                item.weekDay = moment(item.timestamp).format('dddd');
                 if (item.dayTimestamp) return item;
 
                 item.dayTimestamp = moment(item.timestamp).startOf('date').unix() * 1000;
