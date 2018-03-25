@@ -24,7 +24,7 @@ class Service {
    * from specific user
    */
   async get (uid) {
-    let dbRef = this.options.firebaseDBInstance.ref('notifsSubscriptionEntries').orderByChild('uid').equalTo(uid);
+    let dbRef = this.options.firebaseDBInstance.ref(`notifsSubscriptionEntries/${uid}`);
     
     return firebaseAdapter.pfirebaseDBSnapshot(dbRef).then(rawObject => {
       return promiseHelpers.async.pObjectToArray(rawObject);
