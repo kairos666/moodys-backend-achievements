@@ -6,13 +6,13 @@ class Service {
   constructor (options) {
     this.options = options || {};
   }
-  
+
   /**
-   * Return mood entries from firebase DB
+   * Return subscriptions entries from firebase DB
    * from all users
    */
   async find () {
-    let dbRef = this.options.firebaseDBInstance.ref('moods');
+    let dbRef = this.options.firebaseDBInstance.ref('notifsSubscriptionEntries');
 
     return firebaseAdapter.pfirebaseDBSnapshot(dbRef).then(rawObject => {
       return promiseHelpers.async.pObjectToArray(rawObject);
@@ -20,11 +20,11 @@ class Service {
   }
 
   /**
-   * Return mood entries from firebase DB
+   * Return subscription entries from firebase DB
    * from specific user
    */
   async get (uid) {
-    let dbRef = this.options.firebaseDBInstance.ref('moods').orderByChild('uid').equalTo(uid);
+    let dbRef = this.options.firebaseDBInstance.ref('notifsSubscriptionEntries').orderByChild('uid').equalTo(uid);
     
     return firebaseAdapter.pfirebaseDBSnapshot(dbRef).then(rawObject => {
       return promiseHelpers.async.pObjectToArray(rawObject);
