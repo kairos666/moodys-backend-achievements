@@ -574,6 +574,15 @@ let moodSpanChange = function(moodsArray, spanDiff) {
         });
 }
 
+/**
+ * evaluate number of subscriptions entries
+ * @param {Array} subscriptionsArray 
+ * @param {Integer} subscriptionsCount
+ */
+let subscriptionsCount = function(subscriptionsArray) {
+    return Promise.resolve(subscriptionsArray.length);
+}
+
 module.exports = {
     async: {
         pObjectToArray: pObjectToArray
@@ -589,6 +598,7 @@ module.exports = {
         sameDayMoodPolarityChange,
         moodPolarityChange,
         moodSpanChange,
-        takeOnlyEntriesAfter
+        takeOnlyEntriesAfter,
+        subscriptionsCount
     }
 };

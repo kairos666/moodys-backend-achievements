@@ -10,9 +10,14 @@ class Service {
 
   async get (uid) {
     // retrieve relevant data for targeted user
-    let allData = await Promise.all([this.app.service('firebase-moods').get(uid), this.app.service('firebase-achievements').get(uid)]);
+    let allData = await Promise.all([
+      this.app.service('firebase-moods').get(uid), 
+      this.app.service('firebase-achievements').get(uid),
+      this.app.service('firebase-subscriptions').get(uid)
+    ]);
     let userMoodEntries = allData[0];
     let userAchievements = allData[1];
+    let userSubscriptions = allData[2];
 
     // calculus
     let allMoodScores = await Promise.all([
@@ -28,7 +33,8 @@ class Service {
       promiseHelpers.achievementsCalculators.moodPolarityChange(userMoodEntries, 1),
       promiseHelpers.achievementsCalculators.moodPolarityChange(userMoodEntries, -1),
       promiseHelpers.achievementsCalculators.moodSpanChange(userMoodEntries, 5),
-      promiseHelpers.achievementsCalculators.moodSpanChange(userMoodEntries, -5)
+      promiseHelpers.achievementsCalculators.moodSpanChange(userMoodEntries, -5),
+      promiseHelpers.achievementsCalculators.subscriptionsCount(userSubscriptions)
     ]);
 
     return {
@@ -47,7 +53,8 @@ class Service {
         maxGlobalNegativeToPositiveChanges: allMoodScores[9],
         maxGlobalPositiveToNegativeChanges: allMoodScores[10],
         maxSpanChangePositive: allMoodScores[11],
-        maxSpanChangeNegative: allMoodScores[12]
+        maxSpanChangeNegative: allMoodScores[12],
+        subscriptionsCount: allMoodScores[13]
       },
       achievementsStatuses: {
         "noob moodist": allMoodScores[0],
@@ -66,7 +73,9 @@ class Service {
         "come back": (allMoodScores[9] >= 1),
         "mood swing": (allMoodScores[10] >= 1),
         "stairway to heaven": (allMoodScores[11] >= 1),
-        "nuclear disaster": (allMoodScores[12] >= 1)
+        "nuclear disaster": (allMoodScores[12] >= 1),
+        "mood alert": (allMoodScores[12] >= 1),
+        "mood monitor": (allMoodScores[12] >= 2)
       }
     }
   }
