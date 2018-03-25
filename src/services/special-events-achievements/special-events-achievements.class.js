@@ -4,8 +4,8 @@ class Service {
     this.options = options || {};
   }
 
-  async find (params) {
-    console.log(params.query);
+  async create (data, params) {
+    console.log(data);
     return `AchievementEvt registered`;
   }
 }
