@@ -79,8 +79,8 @@ class Service {
       }
     };
 
-    // check provider (internal call = register update, external call = just display statistics)
-    const isInternalCall = (params.provider === undefined);
+    // check params (register update if register = true)
+    const isInternalCall = (params.query && params.query.register === 'true');
     if (isInternalCall) {
       // build new achievements object (default, oldValues, newValues)
       const updatedAchievements = Object.assign(
