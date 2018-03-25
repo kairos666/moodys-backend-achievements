@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 const promiseHelpers = require('../../utils/promise-helpers');
+const logger = require('winston');
 
 class Service {
   constructor (options) {
@@ -8,7 +9,7 @@ class Service {
 
   setup(app) { this.app = app; }
 
-  async get (uid) {
+  async get (uid, params) {
     // retrieve relevant data for targeted user
     let allData = await Promise.all([
       this.app.service('firebase-moods').get(uid), 
@@ -37,10 +38,9 @@ class Service {
       promiseHelpers.achievementsCalculators.subscriptionsCount(userSubscriptions)
     ]);
 
-    return {
-      moods: userMoodEntries,
-      achievements: userAchievements,
-      calculated: {
+    // build full response
+    let results = {
+      calculatedUsageStats: {
         hasMoodEntries: allMoodScores[0],
         consecutiveMoodEntries: allMoodScores[1],
         positiveMoodStreak: allMoodScores[2],
@@ -77,7 +77,27 @@ class Service {
         "mood alert": (allMoodScores[12] >= 1),
         "mood monitor": (allMoodScores[12] >= 2)
       }
+    };
+
+    // check provider (internal call = register update, external call = just display statistics)
+    const isInternalCall = (params.provider === undefined);
+    if (isInternalCall) {
+      // build new achievements object (default, oldValues, newValues)
+      const updatedAchievements = Object.assign(
+        this.app.get('achievements').defaultAchievementsStatuses,
+        userAchievements,
+        results.achievementsStatuses
+      );
+
+      // update user achievements status in DB
+      this.app.service('firebase-achievements').update(uid, updatedAchievements).then(() => {
+        logger.debug('achievements registration in DB - successful');
+      }).catch(() => {
+        logger.debug('achievements registration in DB - failed');
+      });
     }
+
+    return results
   }
 }
 

@@ -10,17 +10,13 @@ class Service {
   async find () {
     let dbRef = this.options.firebaseDBInstance.ref('achievements');
     
-    return firebaseAdapter.pfirebaseDBSnapshot(dbRef).then(rawObject => {
-      return promiseHelpers.async.pObjectToArray(rawObject);
-    });
+    return firebaseAdapter.pfirebaseDBSnapshot(dbRef);
   }
 
   async get (id) {
     let dbRef = this.options.firebaseDBInstance.ref(`achievements/${id}`);
     
-    return firebaseAdapter.pfirebaseDBSnapshot(dbRef).then(rawObject => {
-      return promiseHelpers.async.pObjectToArray(rawObject);
-    });
+    return firebaseAdapter.pfirebaseDBSnapshot(dbRef);
   }
  
   async update (uid, data) {
