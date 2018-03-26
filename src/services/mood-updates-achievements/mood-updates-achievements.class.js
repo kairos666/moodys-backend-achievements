@@ -75,12 +75,14 @@ class Service {
         "stairway to heaven": (allMoodScores[11] >= 1),
         "nuclear disaster": (allMoodScores[12] >= 1),
         "mood alert": (allMoodScores[12] >= 1),
-        "mood monitor": (allMoodScores[12] >= 2)
+        "mood monitor": (allMoodScores[12] >= 2),
+        "goldfish": (Number.isInteger(userAchievements.forgotPasswordCounter) && userAchievements.forgotPasswordCounter > 0),
+        "alzeihmer": (Number.isInteger(userAchievements.forgotPasswordCounter) && userAchievements.forgotPasswordCounter >= 3)
       }
     };
 
-    // check params (register update if register = true)
-    const isInternalCall = (params.query && params.query.register === 'true');
+    // check provider (internal call = register update, external call = just display statistics) 
+    const isInternalCall = (params.provider === undefined);
     if (isInternalCall) {
       // build new achievements object (default, oldValues, newValues)
       const updatedAchievements = Object.assign(
