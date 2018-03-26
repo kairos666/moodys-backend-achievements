@@ -25,5 +25,53 @@
       "email": "<dedicated user email>",
       "password": "<dedicated user password>"
     }
+  },
+  "achievements": {
+    "calculatorsList": [
+      { "title": "noob moodist", "calculator": "hasEntries" },
+      { "title": "baron moodist", "calculator": "consecutiveMoods", "count": 3 },
+      { "title": "duke moodist", "calculator": "consecutiveMoods", "count": 5 },
+      { "title": "archduke moodist", "calculator": "consecutiveMoods", "count": 22 },
+      { "title": "king moodist", "calculator": "consecutiveMoods", "count": 66 },
+      { "title": "emperor moodist", "calculator": "consecutiveMoods", "count": 260 },
+      { "title": "happy days", "calculator": "sequencePositiveMoods", "count": 5 },
+      { "title": "zen & balanced", "calculator": "sequenceNeutralMoods", "count": 3 },
+      { "title": "depression", "calculator": "sequenceNegativeMoods", "count": 5 },
+      { "title": "mood roller coaster", "calculator": "sameDayMoodPolarityChange", "count": 1 },
+      { "title": "mood swings meds", "calculator": "sameDayMoodChange", "count": 3 },
+      { "title": "blissed", "calculator": "someSpecificScore", "count": 1, "target": 5 },
+      { "title": "suicidal tendencies", "calculator": "someSpecificScore", "count": 1, "target": -5 },
+      { "title": "come back", "calculator": "moodPolarityChange", "count": 1, "direction": 1 },
+      { "title": "mood swing", "calculator": "moodPolarityChange", "count": 1, "direction": -1 },
+      { "title": "stairway to heaven", "calculator": "moodSpanChange", "count": 1, "diff": 5 },
+      { "title": "nuclear disaster", "calculator": "moodSpanChange", "count": 1, "diff": -5 }
+    ],
+    "defaultAchievementsStatuses": {
+      "adventurer": false,
+      "lost in translation": false,
+      "duck face": false,
+      "goldfish": false,
+      "alzeihmer": false,
+      "noob moodist": false,
+      "baron moodist": false,
+      "duke moodist": false,
+      "archduke moodist": false,
+      "king moodist": false,
+      "emperor moodist": false,
+      "happy days": false,
+      "zen & balanced": false,
+      "depression": false,
+      "blissed": false,
+      "suicidal tendencies": false,
+      "mood swings meds": false,
+      "mood roller coaster": false,
+      "come back": false,
+      "mood swing": false,
+      "stairway to heaven": false,
+      "nuclear disaster": false,
+      "mood alert": false,
+      "mood monitor": false,
+      "forgotPasswordCounter": 0
+    }
   }
 }
