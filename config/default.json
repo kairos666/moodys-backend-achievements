@@ -46,6 +46,10 @@
       { "title": "stairway to heaven", "calculator": "moodSpanChange", "count": 1, "diff": 5 },
       { "title": "nuclear disaster", "calculator": "moodSpanChange", "count": 1, "diff": -5 }
     ],
+    "queryParamsName": {
+      "lowerDateBoundary": "lowerTimeLimit",
+      "upperDateBoundary": "upperTimeLimit"
+    },
     "defaultAchievementsStatuses": {
       "adventurer": false,
       "lost in translation": false,

@@ -48,6 +48,53 @@ let takeOnlyEntriesAfter = function(moodsArray, thresholdTimestamp) {
 }
 
 /**
+ * filter out all entries newer than threshold timestamp
+ * @param {*} moodsArray 
+ * @param {Integer} thresholdTimestamp 
+ */
+let takeOnlyEntriesBefore = function(moodsArray, thresholdTimestamp) {
+    return new Promise((resolve, reject) => {
+        async.filter(
+            moodsArray, 
+            async (item) => (item.timestamp <= thresholdTimestamp),
+            (error, processedArray) => { 
+                if (error) {
+                    // couldn't process all the data
+                    reject(error);
+                } else {
+                    // success removing older entries
+                    resolve(processedArray);
+                }
+            }
+        );
+    });
+}
+
+/**
+ * filter out all entries older or newer than thresholds timestamps
+ * @param {*} moodsArray 
+ * @param {Integer} lowerthresholdTimestamp
+ * @param {Integer} upperthresholdTimestamp
+ */
+let takeOnlyEntriesBetween = function(moodsArray, lowerthresholdTimestamp, upperthresholdTimestamp) {
+    return new Promise((resolve, reject) => {
+        async.filter(
+            moodsArray, 
+            async (item) => (lowerthresholdTimestamp <= item.timestamp && item.timestamp <= upperthresholdTimestamp),
+            (error, processedArray) => { 
+                if (error) {
+                    // couldn't process all the data
+                    reject(error);
+                } else {
+                    // success removing older entries
+                    resolve(processedArray);
+                }
+            }
+        );
+    });
+}
+
+/**
  * remove mood entries made sunday or saturday
  * @param {*} moodsArray 
  */
@@ -599,6 +646,8 @@ module.exports = {
         moodPolarityChange,
         moodSpanChange,
         takeOnlyEntriesAfter,
+        takeOnlyEntriesBefore,
+        takeOnlyEntriesBetween,
         subscriptionsCount
     }
 };
