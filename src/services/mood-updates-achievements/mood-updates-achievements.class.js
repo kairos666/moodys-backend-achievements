@@ -17,9 +17,9 @@ class Service {
       this.app.service('firebase-achievements').get(uid),
       this.app.service('firebase-subscriptions').get(uid)
     ]);
-    let userMoodEntries = allData[0];
-    let userAchievements = allData[1];
-    let userSubscriptions = allData[2];
+    let userMoodEntries = (allData[0] !== null) ? allData[0] : [];
+    let userAchievements = (allData[1] !== null) ? allData[1] : {};
+    let userSubscriptions = (allData[2] !== null) ? allData[2] : [];
 
     // enforce time boundaries
     const configQueryParamsName = this.app.get('achievements').queryParamsName;
