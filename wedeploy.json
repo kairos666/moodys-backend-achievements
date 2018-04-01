@@ -1,0 +1,15 @@
+{
+	"id": "achievements",
+	"port": 80,
+	"env": {
+		"NODE_ENV": "production",
+		"ALLOWED_KEY": "<moodys backend API key>",
+		"ALLOWED_DOMAIN": "<moodys backend CORS allowed domain>",
+		"FB_BACKEND_LOGIN": "<firebase account login>",
+		"FB_BACKEND_PWD": "<firebase account password>",
+		"FB_API_KEY": "<firebase node api key>",
+		"FB_AUTH_DOMAIN": "<firebase authorization domain>",
+		"FB_DB_URL": "<firebase database base URL>",
+		"FB_STORAGE_URL": "<firebase storage bucket URL>"
+	}
+}
