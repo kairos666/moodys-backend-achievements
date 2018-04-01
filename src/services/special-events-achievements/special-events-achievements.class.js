@@ -24,6 +24,28 @@ class Service {
     };
     const calculationHandler = (achievementID, uid) => { return this.app.service('mood-updates-achievements').get(uid) };
     const counterAchievementHandler = async (achievementID, uid) => {
+      // calculate uid for specific achievements (forgot password provides only email)
+      let userUID = false;
+      if (achievementID === 'forgotPasswordCounter') {
+        const userEmail = uid;
+        let users = await this.app.service('firebase-users').find();
+        // find matching UID for user email
+        Object.keys(users).some(uid => {
+          if (users[uid].email === userEmail) {
+            userUID = uid;
+            return true;
+          } else {
+            return false;
+          }
+        });
+      }
+      // assign calculated UID or throw error depending on the above
+      if (!userUID) {
+        return Promise.reject(new errors.Unprocessable(`no corresponding UID was found`));
+      } else {
+        uid = userUID;
+      }
+
       // merge status object & update achievement counter
       let currentAchievementsStatuses = await this.app.service('firebase-achievements').get(uid);
       let newAchievementsStatuses = Object.assign(this.app.get('achievements').defaultAchievementsStatuses, currentAchievementsStatuses);
