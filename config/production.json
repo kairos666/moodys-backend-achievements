@@ -1,4 +1,22 @@
 {
-  "host": "moodys-backend-achievements-app.feathersjs.com",
-  "port": "PORT"
+  "authentication": {
+    "apiKey": {
+      "allowedKeys": [ "ALLOWED_KEY" ]
+    }
+  },
+  "firebase": {
+    "firebaseAppConfig": {
+      "apiKey": "FB_API_KEY",
+      "authDomain": "FB_AUTH_DOMAIN",
+      "databaseURL": "FB_DB_URL",
+      "storageBucket": "FB_STORAGE_URL"
+    },
+    "firebaseAchievementsServiceAuth": {
+      "email": "FB_BACKEND_LOGIN", 
+      "password": "FB_BACKEND_PWD"
+    }
+  },
+  "cors": {
+    "whitelist": "ALLOWED_DOMAIN"
+  }
 }
