@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 const promiseHelpers = require('../../utils/promise-helpers');
+const moment = require('moment');
 const logger = require('winston');
 
 class Service {
@@ -19,6 +20,10 @@ class Service {
     let userMoodEntries = allData[0];
     let userAchievements = allData[1];
     let userSubscriptions = allData[2];
+
+    // time boundaries
+    let userMoodOldestEntryDate = (userMoodEntries.length > 0) ? moment(userMoodEntries[0].timestamp).format('MMMM Do YYYY, h:mm:ss') : 'no date available';
+    let userMoodNewestEntryDate = (userMoodEntries.length > 0) ? moment(userMoodEntries[userMoodEntries.length - 1].timestamp).format('MMMM Do YYYY, h:mm:ss') : 'no date available';
 
     // calculus
     let allMoodScores = await Promise.all([
@@ -40,6 +45,10 @@ class Service {
 
     // build full response
     let results = {
+      timeSpan: {
+        oldestMoodEntry: userMoodOldestEntryDate,
+        newestMoodEntry: userMoodNewestEntryDate
+      },
       calculatedUsageStats: {
         hasMoodEntries: allMoodScores[0],
         consecutiveMoodEntries: allMoodScores[1],
