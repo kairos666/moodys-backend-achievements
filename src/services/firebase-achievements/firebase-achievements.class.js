@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 const firebaseAdapter = require('../../adapters/firebase-adapter');
 const promiseHelpers = require('../../utils/promise-helpers');
+const logger = require('winston');
 
 class Service {
   constructor (options) {
@@ -20,6 +21,7 @@ class Service {
   }
  
   async update (uid, data) {
+    logger.info(`updating achievements records for user ${uid} - DB write operation`);
     let dbRef = this.options.firebaseDBInstance.ref(`achievements/${uid}`);
     
     return firebaseAdapter.pSetFirebaseDBRecord(dbRef, data).then(() => {

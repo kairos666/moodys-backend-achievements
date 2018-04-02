@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 const errors = require('@feathersjs/errors');
+const logger = require('winston');
 
 class Service {
   constructor (options) {
@@ -10,20 +11,25 @@ class Service {
 
   async create (data, params) {
     const behaviorAchievementHandler = async (achievementID, uid) => {
+      logger.info(`${achievementID} for user ${uid} - behavior trigger`);
       // merge status object
       let currentAchievementsStatuses = await this.app.service('firebase-achievements').get(uid);
       let newAchievementsStatuses = Object.assign(this.app.get('achievements').defaultAchievementsStatuses, currentAchievementsStatuses);
 
       // update achievement status if possible and necessary
       if (!newAchievementsStatuses.hasOwnProperty(achievementID)) return Promise.reject(new errors.Unprocessable(`achievement special event malformed`));
-      if (newAchievementsStatuses[achievementID]) return Promise.resolve(`user ${uid} has already achieved ${achievementID}`);
+      if (newAchievementsStatuses[achievementID]) logger.debug(`${achievementID} for user: ${uid} is already achieved`);
       newAchievementsStatuses[achievementID] = true;
 
       // update DB
       return this.app.service('firebase-achievements').update(uid, newAchievementsStatuses);
     };
-    const calculationHandler = (achievementID, uid) => { return this.app.service('mood-updates-achievements').get(uid) };
+    const calculationHandler = (achievementID, uid) => { 
+      logger.info(`achievement calculations for user ${uid} - calculations trigger`);
+      return this.app.service('mood-updates-achievements').get(uid) 
+    };
     const counterAchievementHandler = async (achievementID, uid) => {
+      logger.info(`${achievementID} for user ${uid} - counter trigger`);
       // calculate uid for specific achievements (forgot password provides only email)
       let userUID = false;
       if (achievementID === 'forgotPasswordCounter') {
