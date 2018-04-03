@@ -26,7 +26,7 @@ class Service {
     };
     const calculationHandler = (achievementID, uid) => { 
       logger.info(`achievement calculations for user ${uid} - calculations trigger`);
-      return this.app.service('mood-updates-achievements').get(uid) 
+      return this.app.service('mood-updates-achievements').get(uid);
     };
     const counterAchievementHandler = async (achievementID, uid) => {
       logger.info(`${achievementID} for user ${uid} - counter trigger`);
