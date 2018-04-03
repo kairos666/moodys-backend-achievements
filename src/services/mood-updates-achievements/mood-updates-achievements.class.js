@@ -116,6 +116,7 @@ class Service {
     if (isInternalCall) {
       // build new achievements object (default, oldValues, newValues)
       const updatedAchievements = Object.assign(
+        {},
         this.app.get('achievements').defaultAchievementsStatuses,
         userAchievements,
         results.achievementsStatuses

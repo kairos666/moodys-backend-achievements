@@ -14,7 +14,7 @@ class Service {
       logger.info(`${achievementID} for user ${uid} - behavior trigger`);
       // merge status object
       let currentAchievementsStatuses = await this.app.service('firebase-achievements').get(uid);
-      let newAchievementsStatuses = Object.assign(this.app.get('achievements').defaultAchievementsStatuses, currentAchievementsStatuses);
+      let newAchievementsStatuses = Object.assign({}, this.app.get('achievements').defaultAchievementsStatuses, currentAchievementsStatuses);
 
       // update achievement status if possible and necessary
       if (!newAchievementsStatuses.hasOwnProperty(achievementID)) return Promise.reject(new errors.Unprocessable(`achievement special event malformed`));
@@ -54,7 +54,7 @@ class Service {
 
       // merge status object & update achievement counter
       let currentAchievementsStatuses = await this.app.service('firebase-achievements').get(uid);
-      let newAchievementsStatuses = Object.assign(this.app.get('achievements').defaultAchievementsStatuses, currentAchievementsStatuses);
+      let newAchievementsStatuses = Object.assign({}, this.app.get('achievements').defaultAchievementsStatuses, currentAchievementsStatuses);
       newAchievementsStatuses[achievementID]++;
 
       // update DB & trigger calculations
