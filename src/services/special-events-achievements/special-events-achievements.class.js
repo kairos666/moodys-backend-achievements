@@ -86,7 +86,6 @@ class Service {
         // update DB
         pFastHand = this.app.service('firebase-achievements').update(targetUID, newAchievementsStatusesTarget);
       }
-      console.log('target: ', newAchievementsStatusesTarget);
 
       // 2. clean old entries for push notif counter (originUID, sender of the notif)
       let olderThreshold = new Date().getTime() - (1000 * 60 * 60);
@@ -111,8 +110,6 @@ class Service {
           if (pushReactions[timestamp] >= 2) newAchievementsStatusesOrigin['chain reaction'] = true;
         }
       }
-
-      console.log('target: ', newAchievementsStatusesTarget);
 
       // update DB
       pPushCounts = this.app.service('firebase-achievements').update(originUID, newAchievementsStatusesOrigin);
