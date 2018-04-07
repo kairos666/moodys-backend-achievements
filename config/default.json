@@ -83,7 +83,8 @@
       "mood swing": false,
       "stairway to heaven": false,
       "nuclear disaster": false,
-      "forgotPasswordCounter": 0
+      "forgotPasswordCounter": 0,
+      "pushReactions": null
     }
   }
 }

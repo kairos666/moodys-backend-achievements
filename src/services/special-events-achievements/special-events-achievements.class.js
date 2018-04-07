@@ -61,6 +61,75 @@ class Service {
       await this.app.service('firebase-achievements').update(uid, newAchievementsStatuses);
       return this.app.service('mood-updates-achievements').get(uid);
     };
+    const notifActionHandler = async (achievementID, originUID, targetUID, timestamp) => {
+      logger.info(`${achievementID} for user ${targetUID} - notif-action trigger`);
+      // each notification click generate 3 sub actions
+      let bothAchievementsStatuses = await Promise.all([
+        this.app.service('firebase-achievements').get(targetUID),
+        this.app.service('firebase-achievements').get(originUID)
+      ]);
+      let currentAchievementsStatusesTarget = bothAchievementsStatuses[0];
+      let currentAchievementsStatusesOrigin = bothAchievementsStatuses[1];
+      let newAchievementsStatusesTarget = Object.assign({}, this.app.get('achievements').defaultAchievementsStatuses, currentAchievementsStatusesTarget);
+      let newAchievementsStatusesOrigin = Object.assign({}, this.app.get('achievements').defaultAchievementsStatuses, currentAchievementsStatusesOrigin);
+      // exchange null for object (deep nesting)
+      if (newAchievementsStatusesTarget['pushReactions'] === null) newAchievementsStatusesTarget['pushReactions'] = {};
+      if (newAchievementsStatusesOrigin['pushReactions'] === null) newAchievementsStatusesOrigin['pushReactions'] = {};
+
+      // 1. special achievement fast hand
+      let pFastHand = Promise.resolve(`fast hand for user: ${targetUID} is already achieved`);
+      if (newAchievementsStatusesTarget['fast hand']) {
+        logger.debug(`${achievementID} for user: ${targetUID} is already achieved`);
+      } else {
+        newAchievementsStatusesTarget['fast hand'] = true;
+
+        // update DB
+        pFastHand = this.app.service('firebase-achievements').update(targetUID, newAchievementsStatusesTarget);
+      }
+      console.log('target: ', newAchievementsStatusesTarget);
+
+      // 2. clean old entries for push notif counter (originUID, sender of the notif)
+      let olderThreshold = new Date().getTime() - (1000 * 60 * 60);
+      let toBeDeletedEntries = Object.keys(newAchievementsStatusesOrigin['pushReactions']).filter(notifTimestamp => (notifTimestamp < olderThreshold));
+      toBeDeletedEntries.forEach(notifTimestamp => {
+        delete newAchievementsStatusesOrigin['pushReactions'][notifTimestamp];
+      });
+      
+      // 3. counter notif calculation (tchintchin & chain reaction) for origin sender
+      let pPushCounts = Promise.resolve(`tchin tchin and chain reaction for user: ${originUID} are already achieved`);
+      if (timestamp) {
+        let pushReactions = newAchievementsStatusesOrigin['pushReactions'];
+        if (newAchievementsStatusesOrigin['tchin tchin'] && newAchievementsStatusesOrigin['chain reaction']) {
+          logger.debug(`tchin tchin and chain reaction for user: ${originUID} are already achieved`);
+        } else if(!pushReactions[timestamp]) {
+          // new counter entry
+          pushReactions[timestamp] = 1;
+          newAchievementsStatusesOrigin['tchin tchin'] = true;
+        } else {
+          // increment counter
+          pushReactions[timestamp]++;
+          if (pushReactions[timestamp] >= 2) newAchievementsStatusesOrigin['chain reaction'] = true;
+        }
+      }
+
+      console.log('target: ', newAchievementsStatusesTarget);
+
+      // update DB
+      pPushCounts = this.app.service('firebase-achievements').update(originUID, newAchievementsStatusesOrigin);
+      
+      return Promise.all([
+        pFastHand,
+        pPushCounts
+      ]).then(() => {
+        return {
+          target: { uid: targetUID, achievements: newAchievementsStatusesTarget },
+          origin: { uid: originUID, achievements: newAchievementsStatusesOrigin }
+        }
+      }).catch(err => {
+        return new errors.GeneralError(`couldn't update achievements for user ${targetUID} & user ${originUID}`);
+      });
+    };
+
     let handlerFunction;
 
     // sort events depending on update Type and apply action
@@ -69,6 +138,7 @@ class Service {
         case 'counter': handlerFunction = counterAchievementHandler; break;
         case 'behavior': handlerFunction = behaviorAchievementHandler; break;
         case 'calculation': handlerFunction = calculationHandler; break;
+        case 'notif-action': handlerFunction = notifActionHandler; break;
       }
     } else {
       // invalid achievement event
@@ -76,7 +146,7 @@ class Service {
     }
 
     // execute handler function, returns a promise
-    return handlerFunction(data.achievementID, data.originUID);
+    return handlerFunction(data.achievementID, data.originUID, data.targetUID, data.pushTimestamp);
   }
 }
 
