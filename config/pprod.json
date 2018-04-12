@@ -6,10 +6,10 @@
   },
   "firebase": {
     "firebaseAppConfig": {
-      "apiKey": "FB_API_KEY_PROD",
-      "authDomain": "FB_AUTH_DOMAIN_PROD",
-      "databaseURL": "FB_DB_URL_PROD",
-      "storageBucket": "FB_STORAGE_URL_PROD"
+      "apiKey": "FB_API_KEY_PPROD",
+      "authDomain": "FB_AUTH_DOMAIN_PPROD",
+      "databaseURL": "FB_DB_URL_PPROD",
+      "storageBucket": "FB_STORAGE_URL_PPROD"
     },
     "firebaseAchievementsServiceAuth": {
       "email": "FB_BACKEND_LOGIN", 
@@ -17,6 +17,6 @@
     }
   },
   "cors": {
-    "whitelist": "ALLOWED_DOMAIN_PROD"
+    "whitelist": "ALLOWED_DOMAIN_PPROD"
   }
 }
