@@ -104,8 +104,8 @@ class Service {
         "mood swing": (allMoodScores[10] >= 1),
         "stairway to heaven": (allMoodScores[11] >= 1),
         "nuclear disaster": (allMoodScores[12] >= 1),
-        "mood alert": (allMoodScores[12] >= 1),
-        "mood monitor": (allMoodScores[12] >= 2),
+        "mood alert": (allMoodScores[13] >= 1),
+        "mood monitor": (allMoodScores[13] >= 2),
         "goldfish": (Number.isInteger(userAchievements.forgotPasswordCounter) && userAchievements.forgotPasswordCounter > 0),
         "alzeihmer": (Number.isInteger(userAchievements.forgotPasswordCounter) && userAchievements.forgotPasswordCounter >= 3)
       }
